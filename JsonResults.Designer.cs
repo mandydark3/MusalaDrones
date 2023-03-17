@@ -61,6 +61,15 @@ namespace MusalaDrones {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DATABASE ERROR {0}.
+        /// </summary>
+        public static string JSON_DBERROR {
+            get {
+                return ResourceManager.GetString("JSON_DBERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to WRONG DRONE SERIAL NUMBER LENGHT.
         /// </summary>
         public static string JSON_DRONESNBADPROPERTY {

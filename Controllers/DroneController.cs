@@ -25,31 +25,52 @@ namespace MusalaDrones.Controllers
         [HttpGet(Name = "GetDroneBatteryLevel")]
         public JsonResult GetDroneBatteryLevel(string droneSN)
         {
-            var drone = _context.Drones.FirstOrDefault(p => p.SerialNumber == droneSN);
-            if (drone == null)
-                return new JsonResult(JsonResults.JSON_NOTFOUND);
+            try
+            {
+                var drone = _context.Drones.FirstOrDefault(p => p.SerialNumber == droneSN);
+                if (drone == null)
+                    return new JsonResult(JsonResults.JSON_NOTFOUND);
 
-            return new JsonResult(drone.BatteryCapacity);
+                return new JsonResult(drone.BatteryCapacity);
+            }
+            catch (Exception e)
+            {
+                return new JsonResult(string.Format(JsonResults.JSON_DBERROR, e.Message));
+            }
         }
 
         // Checking available drones for loading
         [HttpGet(Name = "GetAvailableDronesLoading")]
         public JsonResult GetAvailableDronesForLoading()
         {
-            var result = JsonSerializer.Serialize(_context.Drones.Where(p => p.State == EDroneState.IDLE && p.BatteryCapacity > 25).ToList());
-            return new JsonResult(result);
+            try
+            {
+                var result = JsonSerializer.Serialize(_context.Drones.Where(p => p.State == EDroneState.IDLE && p.BatteryCapacity > 25).ToList());
+                return new JsonResult(result);
+            }
+            catch (Exception e)
+            {
+                return new JsonResult(string.Format(JsonResults.JSON_DBERROR, e.Message));
+            }
         }
 
         // Checking loaded medication items for a given drone
         [HttpGet(Name = "GetMedicationFromDrone")]
         public JsonResult GetMedicationFromDrone(string droneSN)
         {
-            var drone = _context.Drones.FirstOrDefault(p => p.SerialNumber == droneSN);
-            if (drone == null)
-                return new JsonResult(JsonResults.JSON_NOTFOUND);
+            try
+            {
+                var drone = _context.Drones.FirstOrDefault(p => p.SerialNumber == droneSN);
+                if (drone == null)
+                    return new JsonResult(JsonResults.JSON_NOTFOUND);
 
-            var result = JsonSerializer.Serialize(drone.Medications.ToList());
-            return new JsonResult(result);
+                var result = JsonSerializer.Serialize(drone.Medications.ToList());
+                return new JsonResult(result);
+            }
+            catch (Exception e)
+            {
+                return new JsonResult(string.Format(JsonResults.JSON_DBERROR, e.Message));
+            }
         }
 
         // Loading a drone with medication items
@@ -83,29 +104,36 @@ namespace MusalaDrones.Controllers
              *  [b] Drone could be loaded and some medication left
              */
 
-            // Drone loading
-            drone.State = EDroneState.LOADING;
-            _context.SaveChanges();
-
-            foreach (var medication in linfo.Medications)
+            try
             {
-                // Safe null verification
-                if (medication == null)
-                    continue;
+                // Drone loading
+                drone.State = EDroneState.LOADING;
+                _context.SaveChanges();
 
-                // Current medication CAN be added
-                if (drone.WeightLimit <= drone.Medications.Sum(p => p.Weight) + medication.Weight)
-                    drone.Medications.Add(medication);
-                else
-                    medicationLeft.Add(medication);
+                foreach (var medication in linfo.Medications)
+                {
+                    // Safe null verification
+                    if (medication == null)
+                        continue;
+
+                    // Current medication CAN be added
+                    if (drone.WeightLimit <= drone.Medications.Sum(p => p.Weight) + medication.Weight)
+                        drone.Medications.Add(medication);
+                    else
+                        medicationLeft.Add(medication);
+                }
+
+                // Drone loaded
+                drone.State = EDroneState.LOADED;
+                _context.SaveChanges();
+
+                var result = JsonSerializer.Serialize(medicationLeft);
+                return new JsonResult(result);
             }
-
-            // Drone loaded
-            drone.State = EDroneState.LOADED;
-            _context.SaveChanges();
-
-            var result = JsonSerializer.Serialize(medicationLeft);
-            return new JsonResult(result);
+            catch (Exception e)
+            {
+                return new JsonResult(string.Format(JsonResults.JSON_DBERROR, e.Message));
+            }
         }
 
         // Registering a drone
@@ -134,10 +162,17 @@ namespace MusalaDrones.Controllers
             drone.BatteryCapacity = 100;
             drone.State = EDroneState.IDLE;
 
-            _context.Drones.Add(drone);
-            _context.SaveChanges();
+            try
+            {
+                _context.Drones.Add(drone);
+                _context.SaveChanges();
 
-            return new JsonResult(JsonResults.JSON_OK);
+                return new JsonResult(JsonResults.JSON_OK);
+            }
+            catch (Exception e)
+            {
+                return new JsonResult(string.Format(JsonResults.JSON_DBERROR, e.Message));
+            }
         }
     }
 }
