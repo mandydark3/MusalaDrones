@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MusalaDrones.Data;
+using MusalaDrones.Model;
+using System.Text.Json;
 
 namespace MusalaDrones.Controllers
 {
@@ -17,7 +19,7 @@ namespace MusalaDrones.Controllers
         }
 
 
-        // Check drone battery level for a given drone
+        // Checking drone battery level for a given drone
         [HttpGet(Name = "GetDroneBatteryLevel")]
         public JsonResult GetDroneBatteryLevel(string droneSN)
         {
@@ -26,6 +28,15 @@ namespace MusalaDrones.Controllers
                 return new JsonResult(JsonResults.JSON_NOTFOUND);
 
             return new JsonResult(drone.BatteryCapacity);
+        }
+
+        // Checking available drones for loading
+        [HttpGet(Name = "GetAvailableDronesLoading")]
+        public JsonResult GetAvailableDronesForLoading()
+        {
+            List<Drone> availableList = _context.Drones.Where(p => p.State == EDroneState.IDLE && p.BatteryCapacity > 25).ToList();
+
+            return new JsonResult(JsonSerializer.Serialize(availableList));
         }
     }
 }
