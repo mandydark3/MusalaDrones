@@ -21,7 +21,6 @@ namespace MusalaDrones.Controllers
             _context = context;
         }
 
-
         // Checking drone battery level for a given drone
         [HttpGet(Name = "GetDroneBatteryLevel")]
         public JsonResult GetDroneBatteryLevel(string droneSN)
@@ -54,7 +53,7 @@ namespace MusalaDrones.Controllers
         }
 
         // Loading a drone with medication items
-        [HttpGet(Name = "LoadDroneWithMedication")]
+        [HttpPost(Name = "LoadDroneWithMedication")]
         public JsonResult LoadDroneWithMedication(string loadingInfo)
         {
             // Every Input/Output MUST be Json format, therefore we need an Auxiliary Model data type for this
@@ -107,6 +106,38 @@ namespace MusalaDrones.Controllers
 
             var result = JsonSerializer.Serialize(medicationLeft);
             return new JsonResult(result);
+        }
+
+        // Registering a drone
+        [HttpPost(Name = "RegisteringNewDrone")]
+        public JsonResult RegisteringDrone(string newDrone)
+        {
+            var drone = JsonSerializer.Deserialize<Drone>(newDrone);
+            if (drone == null)
+                return new JsonResult(JsonResults.JSON_WRONGDRONEINFO);
+
+            // Validate drone data
+            // Using reflection to get the values of the model attributes guarantees in the future only modify the model itself to change the validations
+            var snMaxLenght = drone.SerialNumber.GetType().GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.MaxLengthAttribute), true)[0];
+            if (snMaxLenght != null && drone.SerialNumber.Length > snMaxLenght.ToString().Length)
+                return new JsonResult(JsonResults.JSON_WRONGDRONEINFO);
+
+            var WeightLimit = drone.WeightLimit.GetType().GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.RangeAttribute), true);
+            if (WeightLimit != null)
+            {
+                float minWeight = int.Parse(WeightLimit[0].ToString());
+                float maxWeight = int.Parse(WeightLimit[1].ToString());
+                drone.WeightLimit = Math.Clamp(drone.WeightLimit, minWeight, maxWeight);
+            }
+
+            // Max percent is always 100 and default state is IDLE
+            drone.BatteryCapacity = 100;
+            drone.State = EDroneState.IDLE;
+
+            _context.Drones.Add(drone);
+            _context.SaveChanges();
+
+            return new JsonResult(JsonResults.JSON_OK);
         }
     }
 }

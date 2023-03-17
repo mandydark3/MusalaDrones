@@ -61,6 +61,15 @@ namespace MusalaDrones {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to WRONG DRONE SERIAL NUMBER LENGHT.
+        /// </summary>
+        public static string JSON_DRONESNBADPROPERTY {
+            get {
+                return ResourceManager.GetString("JSON_DRONESNBADPROPERTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LOW DRONE BATTERY.
         /// </summary>
         public static string JSON_LOWBATTERY {
@@ -102,6 +111,15 @@ namespace MusalaDrones {
         public static string JSON_OK {
             get {
                 return ResourceManager.GetString("JSON_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WRONG DRONE DATA.
+        /// </summary>
+        public static string JSON_WRONGDRONEINFO {
+            get {
+                return ResourceManager.GetString("JSON_WRONGDRONEINFO", resourceCulture);
             }
         }
         

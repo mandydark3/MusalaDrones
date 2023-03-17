@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="JSON_DRONESNBADPROPERTY" xml:space="preserve">
+    <value>WRONG DRONE SERIAL NUMBER LENGHT</value>
+  </data>
   <data name="JSON_LOWBATTERY" xml:space="preserve">
     <value>LOW DRONE BATTERY</value>
   </data>
@@ -131,6 +134,9 @@
   </data>
   <data name="JSON_OK" xml:space="preserve">
     <value>OK</value>
+  </data>
+  <data name="JSON_WRONGDRONEINFO" xml:space="preserve">
+    <value>WRONG DRONE DATA</value>
   </data>
   <data name="JSON_WRONGLOADINGINFO" xml:space="preserve">
     <value>WRONG LOADING INFO DATA</value>
