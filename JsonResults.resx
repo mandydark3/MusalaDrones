@@ -117,10 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="JSON_LOWBATTERY" xml:space="preserve">
+    <value>LOW DRONE BATTERY</value>
+  </data>
+  <data name="JSON_NOMEDICATIONS" xml:space="preserve">
+    <value>NO MEDICATION TO LOAD</value>
+  </data>
+  <data name="JSON_NOTAVAILABLE" xml:space="preserve">
+    <value>DRONE NOT AVAILABLE</value>
+  </data>
   <data name="JSON_NOTFOUND" xml:space="preserve">
     <value>NOT FOUND</value>
   </data>
   <data name="JSON_OK" xml:space="preserve">
     <value>OK</value>
+  </data>
+  <data name="JSON_WRONGLOADINGINFO" xml:space="preserve">
+    <value>WRONG LOADING INFO DATA</value>
   </data>
 </root>

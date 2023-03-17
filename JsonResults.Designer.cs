@@ -61,6 +61,33 @@ namespace MusalaDrones {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to LOW DRONE BATTERY.
+        /// </summary>
+        public static string JSON_LOWBATTERY {
+            get {
+                return ResourceManager.GetString("JSON_LOWBATTERY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NO MEDICATION TO LOAD.
+        /// </summary>
+        public static string JSON_NOMEDICATIONS {
+            get {
+                return ResourceManager.GetString("JSON_NOMEDICATIONS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DRONE NOT AVAILABLE.
+        /// </summary>
+        public static string JSON_NOTAVAILABLE {
+            get {
+                return ResourceManager.GetString("JSON_NOTAVAILABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NOT FOUND.
         /// </summary>
         public static string JSON_NOTFOUND {
@@ -75,6 +102,15 @@ namespace MusalaDrones {
         public static string JSON_OK {
             get {
                 return ResourceManager.GetString("JSON_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WRONG LOADING INFO DATA.
+        /// </summary>
+        public static string JSON_WRONGLOADINGINFO {
+            get {
+                return ResourceManager.GetString("JSON_WRONGLOADINGINFO", resourceCulture);
             }
         }
     }
