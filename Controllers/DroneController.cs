@@ -34,9 +34,20 @@ namespace MusalaDrones.Controllers
         [HttpGet(Name = "GetAvailableDronesLoading")]
         public JsonResult GetAvailableDronesForLoading()
         {
-            List<Drone> availableList = _context.Drones.Where(p => p.State == EDroneState.IDLE && p.BatteryCapacity > 25).ToList();
+            var result = JsonSerializer.Serialize(_context.Drones.Where(p => p.State == EDroneState.IDLE && p.BatteryCapacity > 25).ToList());
+            return new JsonResult(result);
+        }
 
-            return new JsonResult(JsonSerializer.Serialize(availableList));
+        // Checking loaded medication items for a given drone
+        [HttpGet(Name = "GetMedicationFromDrone")]
+        public JsonResult GetMedicationFromDrone(string droneSN)
+        {
+            var drone = _context.Drones.FirstOrDefault(p => p.SerialNumber == droneSN);
+            if (drone == null)
+                return new JsonResult(JsonResults.JSON_NOTFOUND);
+
+            var result = JsonSerializer.Serialize(drone.Medications.ToList());
+            return new JsonResult(result);
         }
     }
 }
