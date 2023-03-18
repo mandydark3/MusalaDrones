@@ -22,6 +22,21 @@ namespace MusalaDrones.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DroneMedication", b =>
+                {
+                    b.Property<Guid>("DronesID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MedicationsID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("DronesID", "MedicationsID");
+
+                    b.HasIndex("MedicationsID");
+
+                    b.ToTable("DroneMedication");
+                });
+
             modelBuilder.Entity("MusalaDrones.Model.Drone", b =>
                 {
                     b.Property<Guid>("ID")
@@ -82,9 +97,6 @@ namespace MusalaDrones.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("DroneID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<byte[]>("Image")
                         .HasColumnType("varbinary(max)");
 
@@ -97,9 +109,22 @@ namespace MusalaDrones.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DroneID");
-
                     b.ToTable("Medications");
+                });
+
+            modelBuilder.Entity("DroneMedication", b =>
+                {
+                    b.HasOne("MusalaDrones.Model.Drone", null)
+                        .WithMany()
+                        .HasForeignKey("DronesID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MusalaDrones.Model.Medication", null)
+                        .WithMany()
+                        .HasForeignKey("MedicationsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MusalaDrones.Model.Log", b =>
@@ -111,18 +136,6 @@ namespace MusalaDrones.Migrations
                         .IsRequired();
 
                     b.Navigation("Drone");
-                });
-
-            modelBuilder.Entity("MusalaDrones.Model.Medication", b =>
-                {
-                    b.HasOne("MusalaDrones.Model.Drone", null)
-                        .WithMany("Medications")
-                        .HasForeignKey("DroneID");
-                });
-
-            modelBuilder.Entity("MusalaDrones.Model.Drone", b =>
-                {
-                    b.Navigation("Medications");
                 });
 #pragma warning restore 612, 618
         }

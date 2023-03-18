@@ -7,7 +7,17 @@ namespace MusalaDrones.Data
     {
         public MusalaDronesDbContext(DbContextOptions options) : base(options)
         {
+        }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public void Seed()
+        {
+            Database.EnsureCreated();
+            new MusalaDronesSeeder(this).Seed();
         }
 
         // Entities
