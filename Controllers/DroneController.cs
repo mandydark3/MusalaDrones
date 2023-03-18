@@ -24,7 +24,16 @@ namespace MusalaDrones.Controllers
             _context = context;
         }
 
-        // Checking drone battery level for a given drone
+        /// <summary>
+        /// Checking drone battery level for a given drone
+        /// </summary>
+        /// <param name="searchData">
+        /// JSON param formed as { "SerialNumber": [Drone serial number] }
+        /// </param>
+        /// <returns>
+        /// JSON result formed as: { "result": [The actual result] }
+        /// Actual result could be the drone battery level or whether an error occurred 
+        /// </returns>
         [Route("~/api/GetDroneBatteryLevel")]
         [HttpGet]
         public JsonResult GetDroneBatteryLevel(string searchData)
@@ -56,7 +65,13 @@ namespace MusalaDrones.Controllers
             }
         }
 
-        // Checking available drones for loading
+        /// <summary>
+        /// Checking available drones for loading
+        /// </summary>
+        /// <returns>
+        /// JSON result formed as: { "result": [The actual result] }
+        /// Actual result could be the list containing available drones or whether an error occurred 
+        /// </returns>
         [Route("~/api/GetAvailableDronesForLoading")]
         [HttpGet]
         public JsonResult GetAvailableDronesForLoading()
@@ -84,7 +99,16 @@ namespace MusalaDrones.Controllers
             }
         }
 
-        // Checking loaded medication items for a given drone
+        /// <summary>
+        /// Checking loaded medication items for a given drone
+        /// </summary>
+        /// <param name="searchData">
+        /// JSON param formed as { "SerialNumber": [Drone serial number] }
+        /// </param>
+        /// <returns>
+        /// JSON result formed as: { "result": [The actual result] }
+        /// Actual result could be the list containing medication loaded into the drone or whether an error occurred 
+        /// </returns>
         [Route("~/api/GetMedicationFromDrone")]
         [HttpGet]
         public JsonResult GetMedicationFromDrone(string searchData)
@@ -126,7 +150,16 @@ namespace MusalaDrones.Controllers
             }
         }
 
-        // Loading a drone with medication items
+        /// <summary>
+        /// Loading a drone with medication items
+        /// </summary>
+        /// <param name="loadingInfo">
+        /// JSON param formed as { "SerialNumber": [Drone serial number], "Medications": [Pair key-value list formead as "Key": "Code", "Value": Quantity] }
+        /// </param>
+        /// <returns>
+        /// JSON result formed as: { "result": [The actual result] }
+        /// Actual result could be the list containing medication left, if any (couldn't be loaded into the drone due to drone weight limit) or whether an error occurred 
+        /// </returns>
         [Route("~/api/LoadDroneWithMedication")]
         [HttpPost]
         public JsonResult LoadDroneWithMedication(string loadingInfo)
@@ -235,10 +268,19 @@ namespace MusalaDrones.Controllers
             }
         }
 
-        // Registering a drone
-        [Route("~/api/RegisteringDrone")]
+        /// <summary>
+        /// Registering a new drone
+        /// </summary>
+        /// <param name="newDrone">
+        /// JSON param formed as { "SerialNumber": [Drone serial number], "Model": [Number between 1 and 4], "WeightLimit": [Weight limit], "BatteryCapacity": [Battery percent] }
+        /// </param>
+        /// <returns>
+        /// JSON result formed as: { "result": [The actual result] }
+        /// Actual result could be "OK" if the drone could be created or whether an error occurred 
+        /// </returns>
+        [Route("~/api/RegisterDrone")]
         [HttpPost]
-        public JsonResult RegisteringDrone(string newDrone)
+        public JsonResult RegisterDrone(string newDrone)
         {
             // Avoid bad deserialization
             Drone drone = null;

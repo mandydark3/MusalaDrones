@@ -8,7 +8,6 @@ namespace MusalaDrones.Extra
         private readonly ILogger<TaskService> _logger;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly TimeSpan _timer = TimeSpan.FromMinutes(5);
-        public bool Enabled { get; set; } = true;
 
         public TaskService(ILogger<TaskService> logger, IServiceScopeFactory serviceScopeFactory)
         {
@@ -24,10 +23,10 @@ namespace MusalaDrones.Extra
             {
                 try
                 {
-                    if (Enabled)
+                    using var scope = _serviceScopeFactory.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<MusalaDronesDbContext>();
+                    if (context == null)
                     {
-                        using var scope = _serviceScopeFactory.CreateScope();
-                        var context = scope.ServiceProvider.GetRequiredService<MusalaDronesDbContext>();
                         List<Log> logs = new List<Log>();
                         foreach (var drone in context.Drones)
                         {
@@ -49,6 +48,5 @@ namespace MusalaDrones.Extra
                 }
             }
         }
-
     }
 }
