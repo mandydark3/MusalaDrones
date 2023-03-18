@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MusalaDrones.Data;
+using MusalaDrones.Extra;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<MusalaDronesSeeder>();
 builder.Services.AddDbContext<MusalaDronesDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Register the periodic task service
+builder.Services.AddSingleton<TaskService>();
+builder.Services.AddHostedService(provider => provider.GetRequiredService<TaskService>());
 
 var app = builder.Build();
 app.MapGet("/", () => "App is running!");
