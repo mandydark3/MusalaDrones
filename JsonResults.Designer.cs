@@ -61,7 +61,7 @@ namespace MusalaDrones {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DATABASE ERROR {0}.
+        ///   Looks up a localized string similar to DATABASE ERROR: {0}.
         /// </summary>
         public static string JSON_DBERROR {
             get {
@@ -75,6 +75,15 @@ namespace MusalaDrones {
         public static string JSON_DRONESNBADPROPERTY {
             get {
                 return ResourceManager.GetString("JSON_DRONESNBADPROPERTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DRONE ALREADY EXISTS.
+        /// </summary>
+        public static string JSON_DUPLICATEDRONE {
+            get {
+                return ResourceManager.GetString("JSON_DUPLICATEDRONE", resourceCulture);
             }
         }
         

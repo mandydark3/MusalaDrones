@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MusalaDrones.Data;
 
@@ -11,9 +12,11 @@ using MusalaDrones.Data;
 namespace MusalaDrones.Migrations
 {
     [DbContext(typeof(MusalaDronesDbContext))]
-    partial class MusalaDronesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230318050828_DroneMedicationQuantity")]
+    partial class DroneMedicationQuantity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

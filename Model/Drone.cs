@@ -2,7 +2,17 @@
 
 namespace MusalaDrones.Model
 {
-    public enum EDroneModel { Lightweight = 1, Middleweight, Cruiserweight, Heavyweight }
+    public enum EDroneModel 
+    { 
+        [Display(Name = "Lightweight")]
+        Lightweight = 1,
+        [Display(Name = "Middleweight")]
+        Middleweight,
+        [Display(Name = "Cruiserweight")]
+        Cruiserweight,
+        [Display(Name = "Heavyweight")]
+        Heavyweight 
+    }
 
     public enum EDroneState { IDLE = 1, LOADING, LOADED, DELIVERING, DELIVERED, RETURNING }
 
@@ -28,6 +38,6 @@ namespace MusalaDrones.Model
         [Required]
         public EDroneState State { get; set; }
 
-        public virtual List<Medication> Medications { get; set; } = new List<Medication>();
+        public virtual List<DroneMedication> DroneMedications { get; set; } = new List<DroneMedication>();
     }
 }

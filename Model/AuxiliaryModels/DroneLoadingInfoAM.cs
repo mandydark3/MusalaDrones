@@ -3,6 +3,8 @@
     public class DroneLoadingInfoAM
     {
         public string SerialNumber { get; set; } = string.Empty;
-        public List<Medication> Medications { get; set; } = new List<Medication>();
+        // Key - Medication code
+        // Value - Quantity
+        public List<KeyValuePair<string, int>> Medications{ get; set; } = new List<KeyValuePair<string, int>>();
     }
 }

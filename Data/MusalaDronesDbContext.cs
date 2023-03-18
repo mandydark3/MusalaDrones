@@ -23,6 +23,7 @@ namespace MusalaDrones.Data
         // Entities
         public DbSet<Drone> Drones { get; set; }
         public DbSet<Medication> Medications { get; set; }
+        public DbSet<DroneMedication> DronesMedications { get; set; }
         public DbSet<Log> Logs { get; set; }
     }
 }
