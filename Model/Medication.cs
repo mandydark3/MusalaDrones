@@ -18,5 +18,7 @@ namespace MusalaDrones.Model
         public string Code { get; set; } = string.Empty;
 
         public byte[]? Image { get; set; }
+
+        public virtual List<Drone> Drones { get; set; } = new List<Drone>();
     }
 }
