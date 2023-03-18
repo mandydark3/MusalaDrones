@@ -35,8 +35,12 @@ namespace MusalaDrones.Controllers
         /// Actual result could be the drone battery level or whether an error occurred 
         /// </returns>
         [Route("~/api/GetDroneBatteryLevel")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JsonResultAM))]
         [HttpGet]
-        public JsonResult GetDroneBatteryLevel(string searchData)
+        public IActionResult GetDroneBatteryLevel(string searchData)
         {
             // Every Input/Output MUST be Json format, therefore we need an Auxiliary Model data type for this
             DroneSearchAM dSearch = null;
@@ -44,24 +48,24 @@ namespace MusalaDrones.Controllers
             {
                 dSearch = JsonSerializer.Deserialize<DroneSearchAM>(searchData);
                 if (dSearch == null)
-                    return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                    return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
             }
             catch
             {
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
             }
 
             try
             {
                 var drone = _context.Drones.FirstOrDefault(p => p.SerialNumber == dSearch.SerialNumber);
                 if (drone == null)
-                    return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_NOTFOUND });
+                    return new NotFoundResult();
 
-                return new JsonResult(new JsonResultAM() { Result = drone.BatteryCapacity.ToString() });
+                return Ok(new JsonResultAM() { Result = drone.BatteryCapacity.ToString() });
             }
             catch (Exception e)
             {
-                return new JsonResult(new JsonResultAM() { Result = string.Format(JsonResults.JSON_DBERROR, e.Message) });
+                return StatusCode(StatusCodes.Status500InternalServerError, new JsonResultAM() { Result = string.Format(JsonResults.JSON_DBERROR, e.Message) });
             }
         }
 
@@ -73,8 +77,10 @@ namespace MusalaDrones.Controllers
         /// Actual result could be the list containing available drones or whether an error occurred 
         /// </returns>
         [Route("~/api/GetAvailableDronesForLoading")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JsonResultAM))]
         [HttpGet]
-        public JsonResult GetAvailableDronesForLoading()
+        public IActionResult GetAvailableDronesForLoading()
         {
             try
             {
@@ -91,11 +97,11 @@ namespace MusalaDrones.Controllers
                                                 }
                                             });
                 var result = JsonSerializer.Serialize(query.ToList());
-                return new JsonResult(new JsonResultAM() { Result = result });
+                return Ok(new JsonResultAM() { Result = result });
             }
             catch (Exception e)
             {
-                return new JsonResult(new JsonResultAM() { Result = string.Format(JsonResults.JSON_DBERROR, e.Message) });
+                return StatusCode(StatusCodes.Status500InternalServerError, new JsonResultAM() { Result = string.Format(JsonResults.JSON_DBERROR, e.Message) });
             }
         }
 
@@ -110,8 +116,12 @@ namespace MusalaDrones.Controllers
         /// Actual result could be the list containing medication loaded into the drone or whether an error occurred 
         /// </returns>
         [Route("~/api/GetMedicationFromDrone")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JsonResultAM))]
         [HttpGet]
-        public JsonResult GetMedicationFromDrone(string searchData)
+        public IActionResult GetMedicationFromDrone(string searchData)
         {
             // Every Input/Output MUST be Json format, therefore we need an Auxiliary Model data type for this
             DroneSearchAM dSearch = null;
@@ -119,17 +129,17 @@ namespace MusalaDrones.Controllers
             {
                 dSearch = JsonSerializer.Deserialize<DroneSearchAM>(searchData);
                 if (dSearch == null)
-                    return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                    return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
             }
             catch
             {
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
             }
 
             try
             {
                 if (!_context.Drones.Any(p => p.SerialNumber == dSearch.SerialNumber))
-                    return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_NOTFOUND });
+                    return new NotFoundResult();
 
                 var query = _context.DronesMedications.Include(d => d.Drone).
                                                        Include(m => m.Medication).
@@ -142,11 +152,11 @@ namespace MusalaDrones.Controllers
                                                            Weight = s.Medication.Weight
                                                        }, Quantity = s.Quantity}).ToList();
                 var result = JsonSerializer.Serialize(query);
-                return new JsonResult(new JsonResultAM() { Result = result });
+                return Ok(new JsonResultAM() { Result = result });
             }
             catch (Exception e)
             {
-                return new JsonResult(new JsonResultAM() { Result = string.Format(JsonResults.JSON_DBERROR, e.Message) });
+                return StatusCode(StatusCodes.Status500InternalServerError, new JsonResultAM() { Result = string.Format(JsonResults.JSON_DBERROR, e.Message) });
             }
         }
 
@@ -161,8 +171,13 @@ namespace MusalaDrones.Controllers
         /// Actual result could be the list containing medication left, if any (couldn't be loaded into the drone due to drone weight limit) or whether an error occurred 
         /// </returns>
         [Route("~/api/LoadDroneWithMedication")]
+        [ProducesResponseType(StatusCodes.Status303SeeOther)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JsonResultAM))]
         [HttpPost]
-        public JsonResult LoadDroneWithMedication(string loadingInfo)
+        public IActionResult LoadDroneWithMedication(string loadingInfo)
         {
             // Every Input/Output MUST be Json format, therefore we need an Auxiliary Model data type for this
             DroneLoadingInfoAM linfo = null;
@@ -170,28 +185,28 @@ namespace MusalaDrones.Controllers
             {
                 linfo = JsonSerializer.Deserialize<DroneLoadingInfoAM>(loadingInfo);
                 if (linfo == null)
-                    return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                    return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
             }
             catch
             {
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
             }
 
             var drone = _context.Drones.FirstOrDefault(p => p.SerialNumber == linfo.SerialNumber);
             if (drone == null)
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_NOTFOUND });
+                return new NotFoundResult();
 
             // Low battery?
             if (drone.BatteryCapacity <= LOW_BATTERY_THRESHOLD)
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_LOWBATTERY });
+                return StatusCode(StatusCodes.Status303SeeOther, new JsonResultAM() { Result = JsonResults.JSON_LOWBATTERY });
 
             // Idle?
             if (drone.State != EDroneState.IDLE)
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_NOTAVAILABLE });
+                return StatusCode(StatusCodes.Status303SeeOther, new JsonResultAM() { Result = JsonResults.JSON_NOTAVAILABLE });
 
             // No medications
             if (linfo.Medications == null || linfo.Medications.Count == 0)
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_NOMEDICATIONS });
+                return StatusCode(StatusCodes.Status303SeeOther, new JsonResultAM() { Result = JsonResults.JSON_NOMEDICATIONS });
 
             DroneLoadingInfoAM medicationLeft = new DroneLoadingInfoAM { SerialNumber = drone.SerialNumber };
             /* Trying to load the drone with the medications. Two scenarios may occur:
@@ -259,12 +274,12 @@ namespace MusalaDrones.Controllers
                     ts.Complete();
 
                     var result = JsonSerializer.Serialize(medicationLeft);
-                    return new JsonResult(new JsonResultAM() { Result = result });
+                    return Ok(new JsonResultAM() { Result = result });
                 }
             }
             catch (Exception e)
             {
-                return new JsonResult(new JsonResultAM() { Result = string.Format(JsonResults.JSON_DBERROR, e.Message) });
+                return StatusCode(StatusCodes.Status500InternalServerError, new JsonResultAM() { Result = string.Format(JsonResults.JSON_DBERROR, e.Message) });
             }
         }
 
@@ -279,8 +294,11 @@ namespace MusalaDrones.Controllers
         /// Actual result could be "OK" if the drone could be created or whether an error occurred 
         /// </returns>
         [Route("~/api/RegisterDrone")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JsonResultAM))]
         [HttpPost]
-        public JsonResult RegisterDrone(string newDrone)
+        public IActionResult RegisterDrone(string newDrone)
         {
             // Avoid bad deserialization
             Drone drone = null;
@@ -288,20 +306,20 @@ namespace MusalaDrones.Controllers
             {
                 drone = JsonSerializer.Deserialize<Drone>(newDrone);
                 if (drone == null)
-                    return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                    return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGDRONEINFO });
             }
             catch
             {
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGDRONEINFO });
             }
 
             // Validate drone data
             if (string.IsNullOrEmpty(drone.SerialNumber) || drone.Model < EDroneModel.Lightweight || drone.Model > EDroneModel.Heavyweight)
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGDRONEINFO });
 
             // Already exists?
             if (_context.Drones.Any(p => p.SerialNumber == drone.SerialNumber))
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_DUPLICATEDRONE });
+                return StatusCode(StatusCodes.Status303SeeOther, new JsonResultAM() { Result = JsonResults.JSON_DUPLICATEDRONE });
             
             // Using reflection to get the values of the model attributes guarantees in the future only modify the model itself to change the validations
             var fp1 = drone.GetType().GetProperty("SerialNumber");
@@ -309,7 +327,7 @@ namespace MusalaDrones.Controllers
             {
                 MaxLengthAttribute maxAttr = fp1.GetCustomAttributes(typeof(MaxLengthAttribute), false)[0] as MaxLengthAttribute;
                 if (maxAttr != null && drone.SerialNumber.Length > maxAttr.Length)
-                    return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                    return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGDRONEINFO });
             }
 
             var fp2 = drone.GetType().GetProperty("WeightLimit");
@@ -329,7 +347,7 @@ namespace MusalaDrones.Controllers
                         maxWeight = float.Parse(attrMax);
 
                     if (drone.WeightLimit < minWeight || drone.WeightLimit > maxWeight)
-                        return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
+                        return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGDRONEINFO });
                 }
             }
 
@@ -343,11 +361,11 @@ namespace MusalaDrones.Controllers
                 _context.Drones.Add(drone);
                 _context.SaveChanges();
 
-                return new JsonResult(new JsonResultAM() { Result = JsonResults.JSON_OK });
+                return Ok(new JsonResultAM() { Result = JsonResults.JSON_OK });
             }
             catch (Exception e)
             {
-                return new JsonResult(new JsonResultAM() { Result = string.Format(JsonResults.JSON_DBERROR, e.Message) });
+                return StatusCode(StatusCodes.Status500InternalServerError, new JsonResultAM() { Result = string.Format(JsonResults.JSON_DBERROR, e.Message) });
             }
         }
     }
