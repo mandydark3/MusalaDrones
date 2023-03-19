@@ -15,12 +15,10 @@ namespace MusalaDrones.Controllers
     {
         public const int LOW_BATTERY_THRESHOLD = 25;
 
-        private readonly ILogger<DroneController> _logger;
-        private MusalaDronesDbContext _context;
+        private readonly MusalaDronesDbContext _context;
 
-        public DroneController(ILogger<DroneController> logger, MusalaDronesDbContext context)
+        public DroneController(MusalaDronesDbContext context)
         {
-            _logger = logger;
             _context = context;
         }
 
@@ -57,7 +55,7 @@ namespace MusalaDrones.Controllers
 
             try
             {
-                var drone = _context.Drones.FirstOrDefault(p => p.SerialNumber == dSearch.SerialNumber);
+                var drone = _context.Drones.SingleOrDefault(p => p.SerialNumber == dSearch.SerialNumber);
                 if (drone == null)
                     return new NotFoundResult();
 
@@ -89,7 +87,6 @@ namespace MusalaDrones.Controllers
                                             {
                                                 Drone = new
                                                 {
-                                                    ID = p.ID,
                                                     SerialNumber = p.SerialNumber,
                                                     Model = p.Model.GetDisplayName(),
                                                     WeightLimit = p.WeightLimit,
@@ -138,15 +135,14 @@ namespace MusalaDrones.Controllers
 
             try
             {
-                if (!_context.Drones.Any(p => p.SerialNumber == dSearch.SerialNumber))
+                var drone = _context.Drones.SingleOrDefault(p => p.SerialNumber == dSearch.SerialNumber);
+                if (drone == null)
                     return new NotFoundResult();
 
-                var query = _context.DronesMedications.Include(d => d.Drone).
-                                                       Include(m => m.Medication).
-                                                       Where(d => d.Drone.SerialNumber == dSearch.SerialNumber).
+                var query = _context.DronesMedications.Include(m => m.Medication).
+                                                       Where(d => d.DroneID == drone.ID).
                                                        Select(s => new { Medication = new 
                                                        { 
-                                                           ID = s.Medication.ID, 
                                                            Code = s.Medication.Code, 
                                                            Name = s.Medication.Name,
                                                            Weight = s.Medication.Weight
@@ -192,7 +188,7 @@ namespace MusalaDrones.Controllers
                 return BadRequest(new JsonResultAM() { Result = JsonResults.JSON_WRONGLOADINGINFO });
             }
 
-            var drone = _context.Drones.FirstOrDefault(p => p.SerialNumber == linfo.SerialNumber);
+            var drone = _context.Drones.SingleOrDefault(p => p.SerialNumber == linfo.SerialNumber);
             if (drone == null)
                 return new NotFoundResult();
 
@@ -222,18 +218,15 @@ namespace MusalaDrones.Controllers
                     drone.State = EDroneState.LOADING;
                     _context.SaveChanges();
 
+                    float currentWeight = 0;
                     foreach (var med in linfo.Medications)
                     {
                         // Safe null verification
                         if (!string.IsNullOrEmpty(med.Key))
                         {
-                            var medication = _context.Medications.FirstOrDefault(p => p.Code == med.Key);
+                            var medication = _context.Medications.SingleOrDefault(p => p.Code == med.Key);
                             if (medication != null)
                             {
-                                float currentWeight = _context.DronesMedications.Include(d => d.Drone).
-                                                                                 Include(m => m.Medication).
-                                                                                 Where(dm => dm.Drone.SerialNumber == drone.SerialNumber).
-                                                                                 Sum(s => s.Medication.Weight * s.Quantity);
                                 // Trying to optimize the loading proccess
                                 int counter = 0;
                                 DroneMedication newLoadingMed = new DroneMedication
@@ -250,6 +243,7 @@ namespace MusalaDrones.Controllers
                                 if (counter > 0)
                                 {
                                     newLoadingMed.Quantity = counter;
+                                    currentWeight += newLoadingMed.Medication.Weight * counter;
                                     _context.DronesMedications.Add(newLoadingMed);
                                     _context.SaveChanges();
                                 }
@@ -262,9 +256,9 @@ namespace MusalaDrones.Controllers
                     }
 
                     // Drone loaded 
-                    // Assuming that the drone goes to LOADED state every time it loads medication regardless of
+                    // Assuming that the drone goes into LOADED state every time it loads medication regardless of
                     // NOT be fully loaded (Medications weight sum  == drone weight limit)
-                    if (_context.DronesMedications.Include(d => d.Drone).Any(d => d.Drone.SerialNumber == drone.SerialNumber))
+                    if (_context.DronesMedications.Include(d => d.Drone).Any(d => d.DroneID == drone.ID))
                         drone.State = EDroneState.LOADED;
                     else
                         // No medication could be loaded, reverting to IDLE

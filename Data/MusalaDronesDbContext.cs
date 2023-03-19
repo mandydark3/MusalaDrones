@@ -5,9 +5,9 @@ namespace MusalaDrones.Data
 {
     public class MusalaDronesDbContext : DbContext
     {
-        public MusalaDronesDbContext(DbContextOptions options) : base(options)
-        {
-        }
+        public MusalaDronesDbContext() { }
+
+        public MusalaDronesDbContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,9 +21,9 @@ namespace MusalaDrones.Data
         }
 
         // Entities
-        public DbSet<Drone> Drones { get; set; }
-        public DbSet<Medication> Medications { get; set; }
-        public DbSet<DroneMedication> DronesMedications { get; set; }
-        public DbSet<Log> Logs { get; set; }
+        public virtual DbSet<Drone> Drones { get; set; }
+        public virtual DbSet<Medication> Medications { get; set; }
+        public virtual DbSet<DroneMedication> DronesMedications { get; set; }
+        public virtual DbSet<Log> Logs { get; set; }
     }
 }
