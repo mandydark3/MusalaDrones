@@ -30,7 +30,7 @@ namespace MusalaDrones.Controllers
         /// </param>
         /// <returns>
         /// JSON result formed as: { "result": [The actual result] }
-        /// Actual result could be the drone battery level or whether an error occurred 
+        /// Actual result could be the drone battery level or if an error occurred 
         /// </returns>
         [Route("~/api/GetDroneBatteryLevel")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -72,7 +72,7 @@ namespace MusalaDrones.Controllers
         /// </summary>
         /// <returns>
         /// JSON result formed as: { "result": [The actual result] }
-        /// Actual result could be the list containing available drones or whether an error occurred 
+        /// Actual result could be the list containing available drones or if an error occurred 
         /// </returns>
         [Route("~/api/GetAvailableDronesForLoading")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -110,7 +110,7 @@ namespace MusalaDrones.Controllers
         /// </param>
         /// <returns>
         /// JSON result formed as: { "result": [The actual result] }
-        /// Actual result could be the list containing medication loaded into the drone or whether an error occurred 
+        /// Actual result could be the list containing medication loaded into the drone or if an error occurred 
         /// </returns>
         [Route("~/api/GetMedicationFromDrone")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -164,7 +164,7 @@ namespace MusalaDrones.Controllers
         /// </param>
         /// <returns>
         /// JSON result formed as: { "result": [The actual result] }
-        /// Actual result could be the list containing medication left, if any (couldn't be loaded into the drone due to drone weight limit) or whether an error occurred 
+        /// Actual result could be the list containing medication left, if any (couldn't be loaded into the drone due to drone weight limit) or if an error occurred 
         /// </returns>
         [Route("~/api/LoadDroneWithMedication")]
         [ProducesResponseType(StatusCodes.Status303SeeOther)]
@@ -285,7 +285,7 @@ namespace MusalaDrones.Controllers
         /// </param>
         /// <returns>
         /// JSON result formed as: { "result": [The actual result] }
-        /// Actual result could be "OK" if the drone could be created or whether an error occurred 
+        /// Actual result could be "OK" if the drone could be created or if an error occurred 
         /// </returns>
         [Route("~/api/RegisterDrone")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
